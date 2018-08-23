@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2012-13 Wavelety <support@wavelety.com> -->
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="false">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d{dd MMM yyyy HH:mm:ss,SSS} [poynt] [%t] %c %x %-5p %m%n" />
+		</layout>
+	</appender>
+	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/var/log/wavelety/poynt.log" />
+		<param name="MaxFileSize" value="5MB" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MMM-dd HH:mm:ss,SSS} [%t] %c %x %-5p %m%n" />
+		</layout>
+	</appender>
+
+
+	<category name="org.apache" additivity="false">
+		<priority value="INFO" />
+	</category>
+	<category name="org.apache.http" additivity="false">
+		<priority value="DEBUG" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="CONSOLE" />
+	</category>
+    <category name="co.poynt" additivity="false">
+        <priority value="DEBUG" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
+    </category>
+
+	<root>
+		<priority value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</log4j:configuration>

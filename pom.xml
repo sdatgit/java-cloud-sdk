@@ -1,12 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<groupId>co.poynt.api</groupId>
-	<artifactId>java-cloud-sdk</artifactId>
+	<artifactId>poynt-java-cloud-sdk</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
 	<name>Poynt Java Cloud SDK</name>
 	<url>http://services.poynt.net</url>
+	<properties>
+		<log4j.version>1.2.16</log4j.version>
+		<slf4j.version>1.7.2</slf4j.version>
+		<testng.version>6.1.1</testng.version>
+	</properties>
 	<scm>
 		<url>https://github.com/poynt/java-cloud-sdk</url>
 		<connection>scm:git:ssh://git@github.com/poynt/java-cloud-sdk</connection>
@@ -38,7 +43,7 @@
 		<dependency>
 			<groupId>co.poynt.api</groupId>
 			<artifactId>api-model</artifactId>
-			<version>1.2.64</version>
+			<version>1.2.116</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -70,7 +75,11 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.12</version>
 		</dependency>
-
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -83,8 +92,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>

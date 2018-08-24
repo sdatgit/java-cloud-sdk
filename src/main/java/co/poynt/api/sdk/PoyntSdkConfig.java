@@ -2,6 +2,7 @@ package co.poynt.api.sdk;
 
 import java.io.Reader;
 
+//by Wavelety, Inc.
 public class PoyntSdkConfig extends Config {
     
     private Reader keyPairReader;

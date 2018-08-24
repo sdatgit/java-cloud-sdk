@@ -18,13 +18,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// by Wavelety, Inc.
 public class PoyntSdkBuilder extends PoyntSdk.Builder {
     private static final Logger logger = LoggerFactory.getLogger(PoyntSdkBuilder.class);
     public static final String POYNT_MERCHANT_ID = "poynt.biz";
     public static final String POYNT_ACCESS_TOKEN = "accessToken";
     public static final String POYNT_REFRESH_TOKEN = "refreshToken";
     public static final String POYNT_TOKEN_EXPIRY = "expiresIn";
-    
 
     private PoyntSdk sdk;
     private JsonWebTokenService jwt2;
@@ -54,6 +54,7 @@ public class PoyntSdkBuilder extends PoyntSdk.Builder {
 
         }
         catch (IOException e) {
+            logger.error("Failed to configure ", e);
             throw new PoyntSdkException("Failed to initialize JWT2.");
         }
 
@@ -79,7 +80,7 @@ public class PoyntSdkBuilder extends PoyntSdk.Builder {
         if (code == null) {
             throw new IllegalArgumentException("code is required!");
         }
-        if(redirectUri == null) {
+        if (redirectUri == null) {
             throw new IllegalArgumentException("redirectUri is required!");
         }
         /**
@@ -98,11 +99,10 @@ public class PoyntSdkBuilder extends PoyntSdk.Builder {
 
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 
-            urlParameters.add(new BasicNameValuePair("grant_type", "authorization_code"));
-            urlParameters.add(new BasicNameValuePair("redirect_uri", redirectUri));
-            urlParameters.add(new BasicNameValuePair("client_id", sdk.getConfig().getAppId()));
-            urlParameters.add(new BasicNameValuePair("code", code));
-
+        urlParameters.add(new BasicNameValuePair("grant_type", "authorization_code"));
+        urlParameters.add(new BasicNameValuePair("redirect_uri", redirectUri));
+        urlParameters.add(new BasicNameValuePair("client_id", sdk.getConfig().getAppId()));
+        urlParameters.add(new BasicNameValuePair("code", code));
 
         try {
             post.setEntity(new UrlEncodedFormEntity(urlParameters));
@@ -121,11 +121,16 @@ public class PoyntSdkBuilder extends PoyntSdk.Builder {
                 return tokenProperties;
             }
             else {
-                throw new PoyntSdkException(
-                                            response.getStatusLine().getStatusCode() + ": " + response.getStatusLine().getReasonPhrase());
+                String emsg = String.format("Failed to get access token for authz code=%s response status=%d message=%s", code, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                logger.error(emsg);
+                throw new PoyntSdkException(emsg);
             }
         }
         catch (Exception e) {
+            if(e instanceof PoyntSdkException) {
+                throw (PoyntSdkException)e;
+            }
+            logger.error("Failed to get access token for authz code={}", code, e);
             throw new PoyntSdkException("Failed to obtain access token.");
         }
         finally {

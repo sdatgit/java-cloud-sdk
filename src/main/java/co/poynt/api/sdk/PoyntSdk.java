@@ -128,12 +128,17 @@ public class PoyntSdk implements Closeable {
 				cm.setMaxTotal(cfg.getHttpMaxConnection());
 				cm.setDefaultMaxPerRoute(cfg.getHttpMaxConnPerRoute());
 
-				SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();
+				//to run using cli, uncomment the following
+//				SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();
+//
+//				this.client = HttpClientBuilder.create().setSSLContext(sslContext).setDefaultRequestConfig(httpCfg)
+//						.setConnectionManager(cm).build();
+				
+                this.client = HttpClientBuilder.create().setDefaultRequestConfig(httpCfg)
+                        .setConnectionManager(cm).build();
 
-				this.client = HttpClientBuilder.create().setSSLContext(sslContext).setDefaultRequestConfig(httpCfg)
-						.setConnectionManager(cm).build();
-
-			} catch (KeyManagementException | NoSuchAlgorithmException e) {
+//			} catch (KeyManagementException | NoSuchAlgorithmException e) {
+	        } catch (Exception e) {
 				throw new PoyntSdkException("Failed to create http client");
 			}
 

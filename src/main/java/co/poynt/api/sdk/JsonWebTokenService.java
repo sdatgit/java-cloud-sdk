@@ -28,6 +28,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+//by Wavelety, Inc.
 public class JsonWebTokenService extends JsonWebToken {
     private String appId;
     private KeyPair keyPair;

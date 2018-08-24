@@ -4,6 +4,8 @@ import java.util.List;
 
 import co.poynt.api.model.Customer;
 
+
+//by Wavelety, Inc.
 public class ApiCustomer extends Api {
     public static final String API_CUSTOMERS = "/businesses/{businessId}/customers";
 

@@ -18,8 +18,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContexts;
@@ -131,23 +133,21 @@ public class PoyntSdk implements Closeable {
                 cm.setMaxTotal(cfg.getHttpMaxConnection());
                 cm.setDefaultMaxPerRoute(cfg.getHttpMaxConnPerRoute());
 
-                SSLContext sslContext = null;
+                SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();     
+                //following works with jdk 1.7
+                SSLConnectionSocketFactory sslCSFactory = new SSLConnectionSocketFactory(
+                                                                                  sslContext,
+                                                                                  new String[] { "TLSv1.2" },
+                                                                                  null,
+                                                                              SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+                this.client = HttpClients.custom()
+                    .setSSLSocketFactory(sslCSFactory)
+                .build();
+                
+                //setting cm and httpcfg overrides tls1.2 setting
+                //.setConnectionManager(cm).setDefaultRequestConfig(httpCfg)
 
-                //SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();
-
-                sslContext = SSLContext.getInstance("TLSv1.2");
-                sslContext.init(null, null, null);
-                SSLContext.setDefault(sslContext);
-
-                this.client = HttpClientBuilder.create().setSSLContext(sslContext).setDefaultRequestConfig(httpCfg)
-                        .setConnectionManager(cm).build();
-
-                this.client = HttpClientBuilder.create().setDefaultRequestConfig(httpCfg)
-                        .setConnectionManager(cm).build();
-
-                //			} catch (KeyManagementException | NoSuchAlgorithmException e) {
-            }
-            catch (Exception e) {
+            } catch (KeyManagementException | NoSuchAlgorithmException e) {
                 throw new PoyntSdkException("Failed to create http client");
             }
 

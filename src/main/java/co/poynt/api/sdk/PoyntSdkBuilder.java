@@ -117,7 +117,7 @@ public class PoyntSdkBuilder extends PoyntSdk.Builder {
                 }
 
                 @SuppressWarnings("unchecked")
-                Map<String, Object> tokenProperties = om.readValue(result.toString(), HashMap.class);
+                Map<String, Object> tokenProperties = sdk.getOm().readValue(result.toString(), HashMap.class);
                 return tokenProperties;
             }
             else {

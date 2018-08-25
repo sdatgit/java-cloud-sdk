@@ -16,6 +16,7 @@ public class ApiCustomer extends Api {
     public List<Customer> getAll(String businessId) {
         
         Customer customer = new Customer();
+
         createAtBusiness(customer, "businessId");
         return getAllFromBusiness(Customer.class, businessId);
     }

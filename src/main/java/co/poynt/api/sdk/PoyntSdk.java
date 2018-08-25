@@ -35,233 +35,246 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import co.poynt.api.model.TokenResponse;
 
 public class PoyntSdk implements Closeable {
-	private static final Logger logger = LoggerFactory.getLogger(PoyntSdk.class);
-	private Config config;
-	private ObjectMapper om;
+    private static final Logger logger = LoggerFactory.getLogger(PoyntSdk.class);
+    private Config config;
+    private ObjectMapper om;
 
-	private JsonWebToken jsonWebToken;
-	private CloseableHttpClient httpClient;
+    private JsonWebToken jsonWebToken;
+    private CloseableHttpClient httpClient;
 
-	private String accessToken;
-	private String refreshToken;
+    private String accessToken;
+    private String refreshToken;
 
-	private PoyntSdk() {
-		// private on purpose
-	}
+    private PoyntSdk() {
+        // private on purpose
+    }
 
-	@Override
-	public void close() {
-		if (httpClient != null) {
-			try {
-				httpClient.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				// ignore
-			}
-		}
-	}
+    @Override
+    public void close() {
+        if (httpClient != null) {
+            try {
+                httpClient.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                // ignore
+            }
+        }
+    }
 
-	public void setConfig(Config config) {
-		this.config = config;
-	}
+    public void setConfig(Config config) {
+        this.config = config;
+    }
 
-	public void jsonWebToken(JsonWebToken jwt) {
-		this.jsonWebToken = jwt;
-	}
+    public void jsonWebToken(JsonWebToken jwt) {
+        this.jsonWebToken = jwt;
+    }
 
-	public void setHttpClient(CloseableHttpClient client) {
-		this.httpClient = client;
-	}
+    public void setHttpClient(CloseableHttpClient client) {
+        this.httpClient = client;
+    }
 
-	public void setObjectMapper(ObjectMapper om) {
-		this.om = om;
-	}
+    public void setObjectMapper(ObjectMapper om) {
+        this.om = om;
+    }
 
-	public static class Builder {
-		Config cfg;
-		JsonWebToken jwt;
-		CloseableHttpClient client;
-		ObjectMapper om;
+    public static class Builder {
+        Config cfg;
+        JsonWebToken jwt;
+        CloseableHttpClient client;
+        ObjectMapper om;
 
-		public Builder config(Config cfg) {
-			this.cfg = cfg;
-			return this;
-		}
+        public Builder config(Config cfg) {
+            this.cfg = cfg;
+            return this;
+        }
 
-		public Builder jwtGenerator(JsonWebToken jwtGen) {
-			this.jwt = jwtGen;
-			return this;
-		}
+        public Builder jwtGenerator(JsonWebToken jwtGen) {
+            this.jwt = jwtGen;
+            return this;
+        }
 
-		public Builder httpClient(CloseableHttpClient client) {
-			this.client = client;
-			return this;
-		}
+        public Builder httpClient(CloseableHttpClient client) {
+            this.client = client;
+            return this;
+        }
 
-		public Builder jackson(ObjectMapper om) {
-			this.om = om;
-			return this;
-		}
+        public Builder jackson(ObjectMapper om) {
+            this.om = om;
+            return this;
+        }
 
-		public Builder configure(String configFile) throws PoyntSdkException {
+        public Builder configure(String configFile) throws PoyntSdkException {
 
-			this.cfg = new Config();
-			try {
-				cfg.load(configFile);
-			} catch (IOException e) {
-				throw new PoyntSdkException("Failed to load configuration");
-			}
+            this.cfg = new Config();
+            try {
+                cfg.load(configFile);
+            }
+            catch (IOException e) {
+                throw new PoyntSdkException("Failed to load configuration");
+            }
 
-			this.jwt = new JsonWebToken(cfg);
-			try {
-				jwt.init();
-			} catch (IOException e) {
-				throw new PoyntSdkException("Failed to load keys for JWT generator.");
-			}
+            this.jwt = new JsonWebToken(cfg);
+            try {
+                jwt.init();
+            }
+            catch (IOException e) {
+                throw new PoyntSdkException("Failed to load keys for JWT generator.");
+            }
 
-			RequestConfig httpCfg = RequestConfig.custom().setSocketTimeout(cfg.getHttpSocketTimeout())
-					.setConnectTimeout(cfg.getHttpConnectTimeout())
-					.setConnectionRequestTimeout(cfg.getHttpRequestTimeout()).build();
+            RequestConfig httpCfg = RequestConfig.custom().setSocketTimeout(cfg.getHttpSocketTimeout())
+                    .setConnectTimeout(cfg.getHttpConnectTimeout())
+                    .setConnectionRequestTimeout(cfg.getHttpRequestTimeout()).build();
 
-			try {
-				PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-				cm.setMaxTotal(cfg.getHttpMaxConnection());
-				cm.setDefaultMaxPerRoute(cfg.getHttpMaxConnPerRoute());
+            try {
+                PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+                cm.setMaxTotal(cfg.getHttpMaxConnection());
+                cm.setDefaultMaxPerRoute(cfg.getHttpMaxConnPerRoute());
 
-				//to run using cli, uncomment the following
-//				SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();
-//
-//				this.client = HttpClientBuilder.create().setSSLContext(sslContext).setDefaultRequestConfig(httpCfg)
-//						.setConnectionManager(cm).build();
-				
+                SSLContext sslContext = null;
+
+                //SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();
+
+                sslContext = SSLContext.getInstance("TLSv1.2");
+                sslContext.init(null, null, null);
+                SSLContext.setDefault(sslContext);
+
+                this.client = HttpClientBuilder.create().setSSLContext(sslContext).setDefaultRequestConfig(httpCfg)
+                        .setConnectionManager(cm).build();
+
                 this.client = HttpClientBuilder.create().setDefaultRequestConfig(httpCfg)
                         .setConnectionManager(cm).build();
 
-//			} catch (KeyManagementException | NoSuchAlgorithmException e) {
-	        } catch (Exception e) {
-				throw new PoyntSdkException("Failed to create http client");
-			}
+                //			} catch (KeyManagementException | NoSuchAlgorithmException e) {
+            }
+            catch (Exception e) {
+                throw new PoyntSdkException("Failed to create http client");
+            }
 
-			this.om = new ObjectMapper();
-			this.om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            this.om = new ObjectMapper();
+            this.om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-			this.om.setDateFormat(new ISO8601DateFormat());
-			this.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			this.om.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-			this.om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            this.om.setDateFormat(new ISO8601DateFormat());
+            this.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            this.om.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+            this.om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-			return this;
-		}
+            return this;
+        }
 
-		public PoyntSdk build() {
-			PoyntSdk sdk = new PoyntSdk();
-			sdk.setConfig(cfg);
-			sdk.setHttpClient(client);
-			sdk.jsonWebToken(jwt);
-			sdk.setObjectMapper(this.om);
-			return sdk;
-		}
-	}
+        public PoyntSdk build() {
+            PoyntSdk sdk = new PoyntSdk();
+            sdk.setConfig(cfg);
+            sdk.setHttpClient(client);
+            sdk.jsonWebToken(jwt);
+            sdk.setObjectMapper(this.om);
+            return sdk;
+        }
+    }
 
-	public static Builder builder() {
-		return new Builder();
-	}
+    public static Builder builder() {
+        return new Builder();
+    }
 
-	public void clearAccessToken() {
-		this.accessToken = null;
-	}
+    public void clearAccessToken() {
+        this.accessToken = null;
+    }
 
-	public void clearRefreshToken() {
-		this.accessToken = null;
-		this.refreshToken = null;
-	}
+    public void clearRefreshToken() {
+        this.accessToken = null;
+        this.refreshToken = null;
+    }
 
-	public String getAccessToken() {
-		if (this.accessToken != null) {
-			return this.accessToken;
-		}
-		HttpPost post = new HttpPost(Constants.POYNT_API_HOST + Constants.API_TOKEN);
-		post.setHeader("User-Agent", Constants.SDK_AGENT + ": " + this.config.getAppId());
-		post.setHeader("api-version", Constants.POYNT_API_VERSION);
-		String requestId = UUID.randomUUID().toString();
-		logger.debug("Poynt-Request-Id: " + requestId);
-		post.setHeader("Poynt-Request-Id", requestId);
+    public String getAccessToken() {
+        if (this.accessToken != null) {
+            return this.accessToken;
+        }
+        HttpPost post = new HttpPost(Constants.POYNT_API_HOST + Constants.API_TOKEN);
+        post.setHeader("User-Agent", Constants.SDK_AGENT + ": " + this.config.getAppId());
+        post.setHeader("api-version", Constants.POYNT_API_VERSION);
+        String requestId = UUID.randomUUID().toString();
+        logger.debug("Poynt-Request-Id: " + requestId);
+        post.setHeader("Poynt-Request-Id", requestId);
 
-		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 
-		if (this.refreshToken == null) {
-			String selfIssuedJwt = this.jsonWebToken.selfIssue();
-			urlParameters.add(new BasicNameValuePair("grantType", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
-			urlParameters.add(new BasicNameValuePair("assertion", selfIssuedJwt));
-		} else {
-			urlParameters.add(new BasicNameValuePair("grantType", "REFRESH_TOKEN"));
-			urlParameters.add(new BasicNameValuePair("refreshToken", this.refreshToken));
-		}
+        if (this.refreshToken == null) {
+            String selfIssuedJwt = this.jsonWebToken.selfIssue();
+            urlParameters.add(new BasicNameValuePair("grantType", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
+            urlParameters.add(new BasicNameValuePair("assertion", selfIssuedJwt));
+        }
+        else {
+            urlParameters.add(new BasicNameValuePair("grantType", "REFRESH_TOKEN"));
+            urlParameters.add(new BasicNameValuePair("refreshToken", this.refreshToken));
+        }
 
-		try {
-			post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try {
+            post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-			HttpResponse response = httpClient.execute(post);
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				StringBuffer result = new StringBuffer();
-				String line = "";
-				while ((line = reader.readLine()) != null) {
-					result.append(line);
-				}
+            HttpResponse response = httpClient.execute(post);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                StringBuffer result = new StringBuffer();
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
 
-				TokenResponse tokenResponse = om.readValue(result.toString(), TokenResponse.class);
-				this.accessToken = tokenResponse.getAccessToken();
-				this.refreshToken = tokenResponse.getRefreshToken();
-				return this.accessToken;
-			} else {
-				throw new PoyntSdkException(
-						response.getStatusLine().getStatusCode() + ": " + response.getStatusLine().getReasonPhrase());
-			}
-		} catch (Exception e) {
-			throw new PoyntSdkException("Failed to obtain access token.");
-		} finally {
-			post.releaseConnection();
-		}
-	}
+                TokenResponse tokenResponse = om.readValue(result.toString(), TokenResponse.class);
+                this.accessToken = tokenResponse.getAccessToken();
+                this.refreshToken = tokenResponse.getRefreshToken();
+                return this.accessToken;
+            }
+            else {
+                throw new PoyntSdkException(
+                                            response.getStatusLine().getStatusCode() + ": " + response.getStatusLine().getReasonPhrase());
+            }
+        }
+        catch (Exception e) {
+            throw new PoyntSdkException("Failed to obtain access token.");
+        }
+        finally {
+            post.releaseConnection();
+        }
+    }
 
-	public Config getConfig() {
-		return config;
-	}
+    public Config getConfig() {
+        return config;
+    }
 
-	public ObjectMapper getOm() {
-		return om;
-	}
+    public ObjectMapper getOm() {
+        return om;
+    }
 
-	public CloseableHttpClient getHttpClient() {
-		return httpClient;
-	}
+    public CloseableHttpClient getHttpClient() {
+        return httpClient;
+    }
 
-	public ApiBusiness business() {
-		return new ApiBusiness(this);
-	}
+    public ApiBusiness business() {
+        return new ApiBusiness(this);
+    }
 
-	public ApiBusinessUser businessUser() {
-		return new ApiBusinessUser(this);
-	}
+    public ApiBusinessUser businessUser() {
+        return new ApiBusinessUser(this);
+    }
 
-	public ApiCatalog catalog() {
-		return new ApiCatalog(this);
-	}
+    public ApiCatalog catalog() {
+        return new ApiCatalog(this);
+    }
 
-	public ApiProduct product() {
-		return new ApiProduct(this);
-	}
+    public ApiProduct product() {
+        return new ApiProduct(this);
+    }
 
-	public ApiTransaction transaction() {
-		return new ApiTransaction(this);
-	}
+    public ApiTransaction transaction() {
+        return new ApiTransaction(this);
+    }
 
-	public ApiOrder order() {
-		return new ApiOrder(this);
-	}
+    public ApiOrder order() {
+        return new ApiOrder(this);
+    }
 
-	public ApiWebhook webhook() {
-		return new ApiWebhook(this);
-	}
+    public ApiWebhook webhook() {
+        return new ApiWebhook(this);
+    }
 }

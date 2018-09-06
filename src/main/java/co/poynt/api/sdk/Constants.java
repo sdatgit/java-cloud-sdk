@@ -14,6 +14,7 @@ public class Constants {
 
 	public static final String POYNT_API_VERSION = "1.2";
 	public static final String POYNT_API_HOST = "https://services.poynt.net";
+	public static final String POYNT_BILLING_API_HOST = "https://billing.poynt.net";
 	public static final String API_TOKEN = "/token";
 	public static final String API_BUSINESSES = "/businesses";
 	public static final String API_BUSINESS_USERS = "/businesses/{businessId}/businessUsers";

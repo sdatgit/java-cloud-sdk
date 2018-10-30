@@ -1,8 +1,6 @@
 package co.poynt.api.sdk;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -11,11 +9,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import co.poynt.api.model.ResourceList;
+import co.poynt.api.model.Subscription;
 
-public class ApiSubscription extends Api {
+public class ApiSubscription extends ApiBilling {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiSubscription.class);
 
@@ -27,8 +24,8 @@ public class ApiSubscription extends Api {
 
     }
 
-    public <T> ResourceList<T> getAllFromBusiness2(Class<T> resourceType, String businessId) {
-        ResourceList<T> result = null;
+    public ResourceList<Subscription> getAllFromBusiness(String businessId) {
+        ResourceList<Subscription> result = null;
         String accessToken = sdk.getAccessToken();
 
         String baseUrl = this.endPoint.replace("{businessId}", businessId);
@@ -40,15 +37,18 @@ public class ApiSubscription extends Api {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 result = this.readResourceListResponse(response);
             }
+            else if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                logger.error("No subscription found for businessId={} error={}", businessId, response.toString());
+            }
             else {
                 handleError(response);
             }
         }
         catch (IOException e) {
 
-            logger.error("Failed to get business", e);
+            logger.error("Failed to get subscriptions", e);
 
-            throw new PoyntSdkException("Failed to get business");
+            throw new PoyntSdkException("Failed to get subscriptions");
         }
         finally {
             get.releaseConnection();
@@ -57,22 +57,5 @@ public class ApiSubscription extends Api {
         return result;
     }
 
-    public <T> ResourceList<T> readResourceListResponse(HttpResponse response) throws IOException {
-        String responseContent = readResponse(response);
-
-        ResourceList<T> responseList = this.sdk.getOm().readValue(responseContent, new TypeReference<ResourceList<T>>() {});
-        return responseList;
-    }
-    
-    private String readResponse(HttpResponse response) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        StringBuffer sb = new StringBuffer();
-        String line = "";
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-
-        return sb.toString();
-    }
 
 }

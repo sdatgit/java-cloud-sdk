@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import java.util.UUID;
 import co.poynt.api.model.Business;
 import co.poynt.api.model.BusinessUser;
 import co.poynt.api.model.Hook;
+import co.poynt.api.model.Plan;
 import co.poynt.api.model.ResourceList;
 import co.poynt.api.model.Subscription;
 
@@ -33,18 +36,26 @@ public class Main2 {
         System.out.println("============= claims = " + claims.toString());
         //String businessId = (String)claims.get(PoyntSdkBuilder.POYNT_JWT_CLAIM_ORG);
         System.out.println("============= BUSINESS id=" + businessId);
-        
+
         Business business = sdk.business().get(businessId);
         System.out.println("============= BUSINESS =" + business);
 
         System.out.println("============= BUSINESS USERS");
         List<BusinessUser> users = sdk.businessUser().getAll(businessId);
         System.out.println(users);
-        
-        
+
+        System.out.println("============= Plans");
+        ApiBilling apiPlan = new ApiPlan(sdk, appId);
+        ResourceList<LinkedHashMap> plans = apiPlan.getAll();
+        System.out.println(plans);
+        Map<String, LinkedHashMap> ps = new HashMap<String, LinkedHashMap>();
+        for (int i=0; i<plans.getCount(); i++) {
+            ps.put((String)plans.getList().get(i).get("planId"), plans.getList().get(i));
+        }
+
         System.out.println("============= SUBSCRIPTIONS");
         ApiSubscription apiSubscription = new ApiSubscription(sdk, appId);
-        ResourceList<Subscription> subscriptions = apiSubscription.getAllFromBusiness2(Subscription.class, businessId);
+        ResourceList<Subscription> subscriptions = apiSubscription.getAllFromBusiness(businessId);
         System.out.println(subscriptions);
 
         //		System.out.println("=============CATALOG");
@@ -58,17 +69,17 @@ public class Main2 {
         System.out.println("=============Webhooks");
         Hook hook = new Hook();
         hook.setApplicationId(sdk.getConfig().getAppId());
-        hook.setBusinessId(UUID.fromString(businessId));
-        hook.setDeliveryUrl("https://engage.colligso.com/poynt");
-        hook.setEventTypes(Arrays.asList(new String[] { "ORDER_COMPLETED", "TRANSACTION_AUTHORIZED" }));
+        hook.setBusinessId(UUID.fromString("6dc5a48d-8f99-41e9-b716-b3c564f0711c")); //orgid of Colligso
+        hook.setDeliveryUrl("https://stage.colligso.com/poynt/webhook");
+        hook.setEventTypes(Arrays.asList(new String[] { "APPLICATION_SUBSCRIPTION_START", "APPLICATION_SUBSCRIPTION_END" }));
 
         // Poynt will use the secret below to generate a signature using
         // HmacSHA1 of the webhook payload
         // The signature will be send as an http header called
         // "poynt-webhook-signature".
         hook.setSecret("my-shared-secret-with-poynt");
-        sdk.webhook().register(hook);
-
+        Hook resHook = sdk.webhook().register(hook);
+        System.out.println("Hook response=" + resHook.toString());
         System.out.println("=============Done!");
     }
 }

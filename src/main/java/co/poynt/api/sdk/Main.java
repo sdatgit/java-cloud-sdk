@@ -34,7 +34,7 @@ public class Main {
 		System.out.println("=============Webhooks");
 		Hook hook = new Hook();
 		hook.setApplicationId(sdk.getConfig().getAppId());
-		hook.setBusinessId(UUID.fromString(businessId));
+		//hook.setBusinessId(UUID.fromString(businessId));
 		hook.setDeliveryUrl("https://my-webhook-recipient.com/somewhere");
 		hook.setEventTypes(Arrays.asList(new String[] { "ORDER_OPENED", "PRODUCT_CREATED" }));
 

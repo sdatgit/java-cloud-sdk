@@ -22,7 +22,7 @@ import co.poynt.api.model.Subscription;
 public class Main2 {
     public static void main(String[] args) throws FileNotFoundException {
 
-        final String businessId = "feb2ea1a-d05b-4fa2-bc93-dfb9fdd4cb8f"; //geneva
+        final String businessId = "11616893-4a93-4f1a-b81a-8762abf1d8c6"; //cafe cafe //"feb2ea1a-d05b-4fa2-bc93-dfb9fdd4cb8f"; //geneva
         final String appId = "urn:aid:08bc7784-a262-4b97-a84c-348ba0f21c3f";
         //"891b396d-fe26-4339-a810-ff2af2e277ba"; opinion
         PoyntSdk sdk = PoyntSdk.builder().configure("config.properties").build();
@@ -44,19 +44,15 @@ public class Main2 {
         List<BusinessUser> users = sdk.businessUser().getAll(businessId);
         System.out.println(users);
 
-        System.out.println("============= Plans");
-        ApiBilling apiPlan = new ApiPlan(sdk, appId);
-        ResourceList<LinkedHashMap> plans = apiPlan.getAll();
-        System.out.println(plans);
-        Map<String, LinkedHashMap> ps = new HashMap<String, LinkedHashMap>();
-        for (int i=0; i<plans.getCount(); i++) {
-            ps.put((String)plans.getList().get(i).get("planId"), plans.getList().get(i));
-        }
 
         System.out.println("============= SUBSCRIPTIONS");
         ApiSubscription apiSubscription = new ApiSubscription(sdk, appId);
         ResourceList<Subscription> subscriptions = apiSubscription.getAllFromBusiness(businessId);
         System.out.println(subscriptions);
+        for(Object subscription: subscriptions.getList()) {
+            System.out.println("subscription=" + ((Map)subscription).toString());
+        }
+
 
         //		System.out.println("=============CATALOG");
         //		CatalogWithProduct catalog = sdk.catalog().get(businessId, "675f0c80-6db8-4584-a444-6b213d0f4f66");
@@ -66,20 +62,7 @@ public class Main2 {
         //		Product product = sdk.product().get(businessId, "675f0c80-6db8-4584-a444-6b213d0f4f66");
         //		System.out.println(product);
 
-        System.out.println("=============Webhooks");
-        Hook hook = new Hook();
-        hook.setApplicationId(sdk.getConfig().getAppId());
-        hook.setBusinessId(UUID.fromString("6dc5a48d-8f99-41e9-b716-b3c564f0711c")); //orgid of Colligso
-        hook.setDeliveryUrl("https://stage.colligso.com/poynt/webhook");
-        hook.setEventTypes(Arrays.asList(new String[] { "APPLICATION_SUBSCRIPTION_START", "APPLICATION_SUBSCRIPTION_END" }));
 
-        // Poynt will use the secret below to generate a signature using
-        // HmacSHA1 of the webhook payload
-        // The signature will be send as an http header called
-        // "poynt-webhook-signature".
-        hook.setSecret("my-shared-secret-with-poynt");
-        Hook resHook = sdk.webhook().register(hook);
-        System.out.println("Hook response=" + resHook.toString());
         System.out.println("=============Done!");
     }
 }

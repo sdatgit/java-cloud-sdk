@@ -16,7 +16,7 @@ public class ApiSubscription extends ApiBilling {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiSubscription.class);
 
-    public static final String API_SUBSCRIPTIONS = "/apps/{appId}/subscriptions?businessId={businessId}";
+    public static final String API_SUBSCRIPTIONS = "/apps/{appId}/subscriptions";
 
     public ApiSubscription(PoyntSdk sdk, String appId) {
 
@@ -27,8 +27,9 @@ public class ApiSubscription extends ApiBilling {
     public ResourceList<Subscription> getAllFromBusiness(String businessId) {
         ResourceList<Subscription> result = null;
         String accessToken = sdk.getAccessToken();
+        String baseUrl = this.endPoint + "?businessId={businessId}";
 
-        String baseUrl = this.endPoint.replace("{businessId}", businessId);
+        baseUrl = baseUrl.replace("{businessId}", businessId);
         HttpGet get = this.createGetRequest(baseUrl);
 
         get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
@@ -56,6 +57,5 @@ public class ApiSubscription extends ApiBilling {
 
         return result;
     }
-
 
 }

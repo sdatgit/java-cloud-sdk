@@ -41,9 +41,9 @@ public class RegisterWebhook {
         System.out.println("=============Webhooks");
         Hook hook = new Hook();
         hook.setApplicationId(sdk.getConfig().getAppId());
-        hook.setBusinessId(UUID.fromString(businessId)); //orgid of Colligso
+        hook.setBusinessId(UUID.fromString("11616893-4a93-4f1a-b81a-8762abf1d8c6")); //cafe cafe 
         hook.setDeliveryUrl(webhookUrl);
-        hook.setEventTypes(Arrays.asList(new String[] { "APPLICATION_SUBSCRIPTION_START", "APPLICATION_SUBSCRIPTION_END" }));
+        hook.setEventTypes(Arrays.asList(new String[] { "ORDER_COMPLETED"}));
 
         // Poynt will use the secret below to generate a signature using
         // HmacSHA1 of the webhook payload
@@ -52,6 +52,20 @@ public class RegisterWebhook {
         hook.setSecret("my-shared-secret-with-poynt");
         Hook resHook = sdk.webhook().register(hook);
         System.out.println("Hook response=" + resHook.toString());
+        
+        
+        hook = new Hook();
+        hook.setApplicationId(sdk.getConfig().getAppId());
+        hook.setBusinessId(UUID.fromString(businessId)); //orgid of Colligso
+        hook.setDeliveryUrl(webhookUrl);
+        hook.setEventTypes(Arrays.asList(new String[] { "APPLICATION_SUBSCRIPTION_START", "APPLICATION_SUBSCRIPTION_END"}));
+
+        // Poynt will use the secret below to generate a signature using
+        // HmacSHA1 of the webhook payload
+        // The signature will be send as an http header called
+        // "poynt-webhook-signature".
+        hook.setSecret("my-shared-secret-with-poynt");
+        resHook = sdk.webhook().register(hook);
         System.out.println("=============Done!");
     }
 }

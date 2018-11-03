@@ -17,6 +17,7 @@ import co.poynt.api.model.BusinessUser;
 import co.poynt.api.model.Hook;
 import co.poynt.api.model.Plan;
 import co.poynt.api.model.ResourceList;
+import co.poynt.api.model.Store;
 import co.poynt.api.model.Subscription;
 
 public class Main2 {
@@ -44,7 +45,14 @@ public class Main2 {
         List<BusinessUser> users = sdk.businessUser().getAll(businessId);
         System.out.println(users);
 
-
+        System.out.println("============= STORES");
+        ApiStore apiStore = new ApiStore(sdk);
+        List<Store> stores = apiStore.getAll(businessId);
+        System.out.println(stores);
+        
+        Store store = apiStore.get(businessId, "fb436567-f8e0-46c4-9309-348c4278745b");
+        System.out.println(store);
+        
         System.out.println("============= SUBSCRIPTIONS");
         ApiSubscription apiSubscription = new ApiSubscription(sdk, appId);
         ResourceList<Subscription> subscriptions = apiSubscription.getAllFromBusiness(businessId);

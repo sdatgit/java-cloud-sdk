@@ -20,7 +20,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
                      "phase",
                      "planId",
                      "bundleId",
-                     "status"
+                     "status",
+                     "storeId"
 })
 public class Subscription {
 
@@ -44,6 +45,8 @@ public class Subscription {
     private String bundleId;
     @JsonProperty("status")
     private String status;
+    @JsonProperty("storeId")
+    private String storeId;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -146,7 +149,15 @@ public class Subscription {
     public void setStatus(String status) {
         this.status = status;
     }
+    @JsonProperty("storeId")
+    public String getStoreId() {
+        return storeId;
+    }
 
+    @JsonProperty("storeId")
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;

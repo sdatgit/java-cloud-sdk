@@ -168,4 +168,35 @@ public class Subscription {
         this.additionalProperties.put(name, value);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Subscription [createdAt=");
+        builder.append(createdAt);
+        builder.append(", updatedAt=");
+        builder.append(updatedAt);
+        builder.append(", startAt=");
+        builder.append(startAt);
+        builder.append(", businessId=");
+        builder.append(businessId);
+        builder.append(", appId=");
+        builder.append(appId);
+        builder.append(", subscriptionId=");
+        builder.append(subscriptionId);
+        builder.append(", phase=");
+        builder.append(phase);
+        builder.append(", planId=");
+        builder.append(planId);
+        builder.append(", bundleId=");
+        builder.append(bundleId);
+        builder.append(", status=");
+        builder.append(status);
+        builder.append(", storeId=");
+        builder.append(storeId);
+        builder.append(", additionalProperties=");
+        builder.append(additionalProperties);
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

@@ -20,4 +20,8 @@ public class ApiCustomer extends Api {
         createAtBusiness(customer, "businessId");
         return getAllFromBusiness(Customer.class, businessId);
     }
+    
+    public Customer get(String businessId, String customerId) {
+        return this.getFromBusiness(Customer.class, businessId, customerId);
+    }
 }

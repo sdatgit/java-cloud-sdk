@@ -174,8 +174,8 @@ public abstract class Api {
             }
         }
         catch (IOException e) {
-
-            logger.error("Failed to get business", e);
+            e.printStackTrace();
+            logger.error("Failed to get from business {}", businessId, e);
 
             throw new PoyntSdkException("Failed to get business");
         }

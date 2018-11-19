@@ -134,7 +134,7 @@ public class PoyntSdk implements Closeable {
                 cm.setDefaultMaxPerRoute(cfg.getHttpMaxConnPerRoute());
 
                 SSLContext sslContext = SSLContexts.custom().useProtocol("TLSv1.2").build();     
-                //following works with jdk 1.7
+                //following works with jdk 1.7 -sd
                 SSLConnectionSocketFactory sslCSFactory = new SSLConnectionSocketFactory(
                                                                                   sslContext,
                                                                                   new String[] { "TLSv1.2" },
@@ -156,7 +156,9 @@ public class PoyntSdk implements Closeable {
 
             this.om.setDateFormat(new ISO8601DateFormat());
             this.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            this.om.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+            //not compatible with jdk 7 -sd
+            //this.om.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+            this.om.disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
             this.om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return this;

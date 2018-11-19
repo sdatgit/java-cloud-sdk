@@ -19,13 +19,12 @@ public class RegisterWebhook {
     public static void main(String[] args) throws FileNotFoundException {
 
         final String businessId = "6dc5a48d-8f99-41e9-b716-b3c564f0711c"; //colligso
-        final String appId = "urn:aid:f3bb639a-2073-4928-9d2d-6ebf34a80f04"; //"urn:aid:08bc7784-a262-4b97-a84c-348ba0f21c3f"; //spotinstage
+        final String appId = "urn:aid:f3bb639a-2073-4928-9d2d-6ebf34a80f04";
         final String webhookUrl = "https://stage.colligso.com/poynt/webhook";
         
         PoyntSdk sdk = PoyntSdk.builder().configure("config.properties").build();
 
         PoyntSdkBuilder builder2 = new PoyntSdkBuilder();
-        //Reader reader = new InputStreamReader(RegisterWebhook.class.getClassLoader().getResourceAsStream("urn_aid_08bc7784-a262-4b97-a84c-348ba0f21c3f_publicprivatekey.pem"));
         Reader reader = new InputStreamReader(RegisterWebhook.class.getClassLoader().getResourceAsStream("urn_aid_f3bb639a-2073-4928-9d2d-6ebf34a80f04_publicprivatekey.pem"));
 
         builder2.configure(appId, reader);

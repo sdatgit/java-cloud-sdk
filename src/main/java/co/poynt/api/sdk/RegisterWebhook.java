@@ -11,8 +11,8 @@ import co.poynt.api.model.Plan;
 import co.poynt.api.model.ResourceList;
 
 /**
- * Utility to register webhook for givne app
- * @author sanjay
+ * Utility to register webhook for given app
+
  *
  */
 public class RegisterWebhook {

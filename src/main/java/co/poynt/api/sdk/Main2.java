@@ -1,21 +1,13 @@
 package co.poynt.api.sdk;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import co.poynt.api.model.Business;
 import co.poynt.api.model.BusinessUser;
-import co.poynt.api.model.Hook;
-import co.poynt.api.model.Plan;
 import co.poynt.api.model.ResourceList;
 import co.poynt.api.model.Store;
 import co.poynt.api.model.Subscription;
@@ -24,12 +16,13 @@ public class Main2 {
     public static void main(String[] args) throws FileNotFoundException {
 
         final String businessId = "11616893-4a93-4f1a-b81a-8762abf1d8c6"; //cafe cafe //"feb2ea1a-d05b-4fa2-bc93-dfb9fdd4cb8f"; //geneva
-        final String appId = "urn:aid:08bc7784-a262-4b97-a84c-348ba0f21c3f";
+        //final String appId = "urn:aid:08bc7784-a262-4b97-a84c-348ba0f21c3f";
+        final String appId = "urn:aid:f3bb639a-2073-4928-9d2d-6ebf34a80f04";
         //"891b396d-fe26-4339-a810-ff2af2e277ba"; opinion
         PoyntSdk sdk = PoyntSdk.builder().configure("config.properties").build();
 
         PoyntSdkBuilder builder2 = new PoyntSdkBuilder();
-        Reader reader = new InputStreamReader(Main2.class.getClassLoader().getResourceAsStream("urn_aid_08bc7784-a262-4b97-a84c-348ba0f21c3f_publicprivatekey.pem"));
+        Reader reader = new InputStreamReader(Main2.class.getClassLoader().getResourceAsStream("urn_aid_f3bb639a-2073-4928-9d2d-6ebf34a80f04_publicprivatekey.pem"));
         builder2.configure(appId, reader);
         builder2.rebuild(sdk);
 

@@ -158,7 +158,6 @@ public class PoyntSdk implements Closeable {
             this.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             //not compatible with jdk 7 -sd
             //this.om.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-            this.om.disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
             this.om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return this;

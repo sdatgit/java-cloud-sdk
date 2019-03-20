@@ -3,7 +3,7 @@ package co.poynt.api.sdk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApiPlan extends ApiBilling {
+public class ApiPlan extends CustomApi {
 
     static final Logger logger = LoggerFactory.getLogger(ApiPlan.class);
 

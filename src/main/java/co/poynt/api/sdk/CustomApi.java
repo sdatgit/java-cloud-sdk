@@ -16,15 +16,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import co.poynt.api.model.ResourceList;
 
 /**
- * ApiBilling provides methods to manage Poynt Billing
+ * ColigsoApi provides methods to manage Poynt Billing, WebHooks, etc.
  * @author sanjay
  *
  */
-public class ApiBilling extends Api {
+public class CustomApi extends Api {
     
-    static final Logger logger = LoggerFactory.getLogger(ApiBilling.class);
+    static final Logger logger = LoggerFactory.getLogger(CustomApi.class);
     
-    public ApiBilling(PoyntSdk sdk, String endPoint) {
+    public CustomApi(PoyntSdk sdk, String endPoint) {
         super(sdk, endPoint);
         // TODO Auto-generated constructor stub
     }

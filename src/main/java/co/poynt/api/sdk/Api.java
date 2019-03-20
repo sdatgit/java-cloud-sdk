@@ -47,6 +47,7 @@ public abstract class Api {
 
     public void handleError(HttpResponse response) {
         try {
+            logger.debug("response={}", response.toString());
             ErrorInfo error = this.readResponse(response, ErrorInfo.class);
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
@@ -166,6 +167,7 @@ public abstract class Api {
         get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         try {
             HttpResponse response = this.sdk.getHttpClient().execute(get);
+            
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 result = this.readListResponse(response, resourceType);
             }

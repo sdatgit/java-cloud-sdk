@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import co.poynt.api.model.ResourceList;
 import co.poynt.api.model.Subscription;
 
-public class ApiSubscription extends ApiBilling {
+public class ApiSubscription extends CustomApi {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiSubscription.class);
 

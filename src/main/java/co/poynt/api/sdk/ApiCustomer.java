@@ -42,9 +42,9 @@ public class ApiCustomer extends Api {
         String accessToken = sdk.getAccessToken();
 
         String baseUrl = this.endPoint.replace("{businessId}", businessId);
-        baseUrl.replace("{startAt}", startAt);
-        baseUrl.replace("{endAt}", endAt);
-        baseUrl.replace("{startOffset}", "" + offset);
+        baseUrl = baseUrl.replace("{startAt}", startAt);
+        baseUrl = baseUrl.replace("{endAt}", endAt);
+        baseUrl = baseUrl.replace("{startOffset}", "" + offset);
         HttpGet get = this.createGetRequest(baseUrl);
 
         get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);

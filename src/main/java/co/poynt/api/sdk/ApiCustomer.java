@@ -16,7 +16,7 @@ import co.poynt.api.model.CustomerList;
 
 //by Wavelety, Inc.
 public class ApiCustomer extends Api {
-    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers?limit=100&startOffset={startOffset}&startAt={startAt}&endAt={endAt}";
+    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers?limit=100&startOffset={startOffset}";//&startAt={startAt}&endAt={endAt}";
     private static final Logger logger = LoggerFactory.getLogger(ApiCustomer.class);
 
     public ApiCustomer(PoyntSdk sdk) {
@@ -38,13 +38,15 @@ public class ApiCustomer extends Api {
     }
 
     public List<Customer> getAll(String businessId, String startAt, String endAt, int offset) {
-        List<CustomerList> result = new ArrayList<CustomerList>();
+        CustomerList result = null;
         String accessToken = sdk.getAccessToken();
 
         String baseUrl = this.endPoint.replace("{businessId}", businessId);
-        baseUrl = baseUrl.replace("{startAt}", startAt);
-        baseUrl = baseUrl.replace("{endAt}", endAt);
+//        baseUrl = baseUrl.replace("{startAt}", startAt);
+//        baseUrl = baseUrl.replace("{endAt}", endAt);
         baseUrl = baseUrl.replace("{startOffset}", "" + offset);
+        
+        logger.info("getAll: url={}", baseUrl);
         HttpGet get = this.createGetRequest(baseUrl);
 
         get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
@@ -52,7 +54,7 @@ public class ApiCustomer extends Api {
             HttpResponse response = this.sdk.getHttpClient().execute(get);
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                result = this.readListResponse(response, CustomerList.class);
+                result = this.readResponse(response, CustomerList.class);
             } else {
                 handleError(response);
             }
@@ -63,8 +65,8 @@ public class ApiCustomer extends Api {
         } finally {
             get.releaseConnection();
         }
-        if (result.size() > 0) {
-            return result.get(0).getCustomers();
+        if (result != null && result.getCount() > 0) {
+            return result.getCustomers();
         }
         return new ArrayList<Customer>();
 

@@ -16,7 +16,7 @@ import co.poynt.api.model.CustomerList;
 
 //by Wavelety, Inc.
 public class ApiCustomer extends Api {
-    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers?limit=100&startAt={startAt}&endAt={endAt}";
+    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers?limit=100&startOffset={startOffset}&startAt={startAt}&endAt={endAt}";
     private static final Logger logger = LoggerFactory.getLogger(ApiCustomer.class);
 
     public ApiCustomer(PoyntSdk sdk) {
@@ -41,10 +41,10 @@ public class ApiCustomer extends Api {
         List<CustomerList> result = new ArrayList<CustomerList>();
         String accessToken = sdk.getAccessToken();
 
-        String baseUrl = this.endPoint.replace("{businessId}", businessId)
-                .replace("startAt", startAt)
-                .replace("endAt", endAt)
-                .replace("startOffset", "" + offset);
+        String baseUrl = this.endPoint.replace("{businessId}", businessId);
+        baseUrl.replace("{startAt}", startAt);
+        baseUrl.replace("{endAt}", endAt);
+        baseUrl.replace("{startOffset}", "" + offset);
         HttpGet get = this.createGetRequest(baseUrl);
 
         get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
@@ -53,22 +53,19 @@ public class ApiCustomer extends Api {
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 result = this.readListResponse(response, CustomerList.class);
-            }
-            else {
+            } else {
                 handleError(response);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             logger.error("Failed to get customers from business {}", businessId, e);
             throw new PoyntSdkException("Failed to get customers from business=" + businessId);
-        }
-        finally {
+        } finally {
             get.releaseConnection();
         }
-        if(result.size() > 0) {
+        if (result.size() > 0) {
             return result.get(0).getCustomers();
-        } 
+        }
         return new ArrayList<Customer>();
 
     }

@@ -1,8 +1,6 @@
 package co.poynt.api.sdk;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -16,7 +14,7 @@ import co.poynt.api.model.CustomerList;
 
 //by Wavelety, Inc.
 public class ApiCustomer extends Api {
-    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers?limit=100";
+    public static final String API_CUSTOMERS = "/businesses/{businessId}/customers";
     private static final Logger logger = LoggerFactory.getLogger(ApiCustomer.class);
 
     public ApiCustomer(PoyntSdk sdk) {
@@ -34,6 +32,7 @@ public class ApiCustomer extends Api {
         String accessToken = sdk.getAccessToken();
 
         String baseUrl = this.endPoint.replace("{businessId}", businessId);
+        baseUrl += "?limit=100";
         if(next != null) {
             baseUrl = Constants.POYNT_API_HOST + next;
         }
